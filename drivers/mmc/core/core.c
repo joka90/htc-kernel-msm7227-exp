@@ -629,9 +629,8 @@ int mmc_host_lazy_disable(struct mmc_host *host)
 
 	if (host->disable_delay) {
 		wake_lock(&host->wakelock);
-		queue_delayed_work(workqueue, &host->disable,
+		return queue_delayed_work(workqueue, &host->disable,
 				msecs_to_jiffies(host->disable_delay));
-		return 0;
 	} else
 		return mmc_host_do_disable(host, 1);
 }
