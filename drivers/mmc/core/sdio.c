@@ -610,6 +610,7 @@ int mmc_attach_sdio(struct mmc_host *host, u32 ocr)
 	 */
 	card->sdio_funcs = funcs = (ocr & 0x70000000) >> 28;
 
+
 #ifdef CONFIG_MMC_EMBEDDED_SDIO
 	if (host->embedded_sdio_data.funcs)
 		card->sdio_funcs = funcs = host->embedded_sdio_data.num_funcs;
@@ -644,6 +645,12 @@ int mmc_attach_sdio(struct mmc_host *host, u32 ocr)
 			err = sdio_init_func(host->card, i + 1);
 			if (err)
 				goto remove;
+
+		/*
+		 * Enable Runtime PM for this func
+		 */
+		pm_runtime_enable(&card->sdio_func[i]->dev);
+
 #ifdef CONFIG_MMC_EMBEDDED_SDIO
 		}
 #endif
