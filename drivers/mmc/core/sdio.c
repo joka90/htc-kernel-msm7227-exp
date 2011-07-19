@@ -341,7 +341,6 @@ static int mmc_sdio_init_card(struct mmc_host *host, u32 ocr,
 			goto err;
 		}
 		card = oldcard;
-		return 0;
 	}
 
 	/*
@@ -492,6 +491,14 @@ static int mmc_sdio_resume(struct mmc_host *host)
 	mmc_claim_host(host);
 	err = mmc_sdio_init_card(host, host->ocr, host->card,
 				 (host->pm_flags & MMC_PM_KEEP_POWER));
+
+
+ #ifndef CONFIG_MMC_EMBEDDED_SDIO
+
+ 	if (!err && host->sdio_irqs)
+ 		mmc_signal_sdio_irq(host);
+ #endif
+
 	mmc_release_host(host);
 
 	/*
