@@ -1,3 +1,11 @@
+
+# su
+# cd /system/etc/firmware
+# cat /proc/calibration > wl12xx-nvs.bin
+# ln -s ../wifi/Fw1273_CHIP.bin wl12xx-fw.bin
+
+
+
 interactive
 
 config_ti_sdio

@@ -41,6 +41,7 @@ obj-$(CONFIG_MSM_PIL) += peripheral-reset.o
 obj-$(CONFIG_MSM_DSPS) += msm_dsps.o
 obj-$(CONFIG_MSM_FIQ_SUPPORT) += fiq_glue.o
 obj-$(CONFIG_MACH_TROUT) += board-trout-rfkill.o
+obj-$(CONFIG_TROUT_WIFI) += msm_wifi.o
 
 obj-$(CONFIG_ARCH_MSM7X30) += rpc_hsusb.o
 
