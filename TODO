@@ -1,11 +1,39 @@
+*Check if it's working by compiling iw and libnl.
+*Port to legend's cyanogen build
+
+To compile compat wireless I had to remove some defines, You will see...
+
 
 # su
 # cd /system/etc/firmware
-# cat /proc/calibration > wl12xx-nvs.bin
-# ln -s ../wifi/Fw1273_CHIP.bin wl12xx-fw.bin
+# cat /proc/calibration > wl1271-nvs.bin
+# ln -s ../wifi/Fw1273_CHIP.bin wl1271-fw.bin
+
+/etc/firmware
+#define WL1271_FW_NAME "wl1271-fw.bin"
+#define WL1271_NVS_NAME "wl1271-nvs.bin"
 
 
+http://processors.wiki.ti.com/index.php/TI-Android-GingerBread-2.3.4-DevKit-2.1_PortingGuides#WLan
 
-interactive
+    *Enable building of wpa_supplicant in your BoardConfig.mk 
 
-config_ti_sdio
+This is by simply adding following options in BoardConfig.mk:
+
+   BOARD_WPA_SUPPLICANT_DRIVER := WEXT
+   WPA_SUPPLICANT_VERSION      := VER_0_6_X
+   WIFI_DRIVER_MODULE_PATH     := "/system/etc/wifi/wl12xx_sdio.ko"
+   WIFI_DRIVER_MODULE_ARG      := ""
+   WIFI_DRIVER_MODULE_NAME     := "wl12xx_sdio"
+   WIFI_DRIVER_FW_STA_PATH     := "/system/etc/firmware/ti-connectivity/wl1271-fw-2.bin"
+
+
+http://processors.wiki.ti.com/index.php/Open_Source_Wireless_Connectivity_Guide#Advanced_Build_Instruction-Guide
+http://processors.wiki.ti.com/index.php/OMAP_Wireless_Connectivity_OpenSource_libnl_Build
+
+liks to differnt applications iw, calibration .....
+http://www.omappedia.org/wiki/Mac80211_based_open_source_architecture#Useful_Links
+
+
+http://processors.wiki.ti.com/index.php/Driver_debug
+
