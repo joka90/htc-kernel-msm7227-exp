@@ -1,7 +1,10 @@
 *Check if it's working by compiling iw and libnl.
 *Port to legend's cyanogen build
 
+Status:
 To compile compat wireless I had to remove some defines, You will see...
+Working and loading modules with out some errors from compat wireless 2.6.39
+tiwlan is (working/compiled) as unstable as before...
 
 
 # su
@@ -34,6 +37,6 @@ http://processors.wiki.ti.com/index.php/OMAP_Wireless_Connectivity_OpenSource_li
 liks to differnt applications iw, calibration .....
 http://www.omappedia.org/wiki/Mac80211_based_open_source_architecture#Useful_Links
 
-
+Check this out, compiled with debugfs
 http://processors.wiki.ti.com/index.php/Driver_debug
 
