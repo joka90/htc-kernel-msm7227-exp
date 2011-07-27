@@ -1,4 +1,5 @@
-*Check if it's working by compiling iw and libnl.
+*Check if it's working by compiling iw and libnl. - iw and libnl compiling with cyanogen sources now
+* fix auto loading of modules. and prio order/dependensis
 *Port to legend's cyanogen build
 
 Status:
@@ -16,6 +17,9 @@ tiwlan is (working/compiled) as unstable as before...
 #define WL1271_FW_NAME "wl1271-fw.bin"
 #define WL1271_NVS_NAME "wl1271-nvs.bin"
 
+LIBNL for andorid:
+https://github.com/ariknem/libnl
+
 
 http://processors.wiki.ti.com/index.php/TI-Android-GingerBread-2.3.4-DevKit-2.1_PortingGuides#WLan
 
@@ -30,6 +34,14 @@ This is by simply adding following options in BoardConfig.mk:
    WIFI_DRIVER_MODULE_NAME     := "wl12xx_sdio"
    WIFI_DRIVER_FW_STA_PATH     := "/system/etc/firmware/ti-connectivity/wl1271-fw-2.bin"
 
+Patch wpa sup
+
+Android uses SIOCSIWPRIV ioctl to send commands to modify driver behaviour and receive information like signal strength, mac address of the AP, link speed etc. This ioctl is usually not implemented. A quick workaround was to emulate this ioctl functionality in WPA_supplicant itself. Here is the corresponding patch Added emulation of Android private ioctls for generic WiFi drivers
+
+https://gitorious.org/picopc-android-gingerbread/external-wpa_supplicant_6/commit/5f5c50d722eedaedd75c1698b79f464310ce6478?format=patch
+ ~/android/system/external/wpa_supplicant_6 $ git am ~/android/wlan/wpa-sup-patch
+
+
 
 http://processors.wiki.ti.com/index.php/Open_Source_Wireless_Connectivity_Guide#Advanced_Build_Instruction-Guide
 http://processors.wiki.ti.com/index.php/OMAP_Wireless_Connectivity_OpenSource_libnl_Build
@@ -39,4 +51,10 @@ http://www.omappedia.org/wiki/Mac80211_based_open_source_architecture#Useful_Lin
 
 Check this out, compiled with debugfs
 http://processors.wiki.ti.com/index.php/Driver_debug
+
+nl8??? wpa sup
+https://code.georgi-clan.de/p/android-external-wpasupplicant/source/tree/master/
+
+Patch kernel to work:
+https://patchwork.kernel.org/patch/107945/
 
