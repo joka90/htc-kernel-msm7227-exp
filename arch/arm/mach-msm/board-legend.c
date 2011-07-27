@@ -72,6 +72,7 @@
 #include <mach/htc_headset_mgr.h>
 #include <mach/htc_headset_gpio.h>
 #include <mach/htc_headset_microp.h>
+#include <linux/spi/wl12xx.h>
 
 #include "devices.h"
 #include "board-legend.h"
@@ -86,6 +87,8 @@ void __init legend_microp_init(void);
 #endif
 void config_legend_proximity_gpios(int on);
 static int legend_phy_init_seq[] = {0x20, 0x31, 0x1, 0x0D, 0x1, 0x10, -1};
+
+extern struct wl12xx_platform_data legend_wifi_control;
 
 static void legend_phy_reset(void)
 {
@@ -633,6 +636,28 @@ static struct platform_device msm_camera_sensor_s5k4e1gx = {
 };
 #endif
 
+static void legend_wl12xx_init(void)
+{
+	int ret;
+
+	ret = gpio_request(LEGEND_WIFI_IRQ_GPIO, "wl1271 irq");
+	if (ret < 0)
+		goto fail_irq;
+
+	ret = gpio_direction_input(LEGEND_WIFI_IRQ_GPIO);
+	if (ret < 0)
+		goto fail_irq;
+
+	legend_wifi_control.irq = gpio_to_irq(LEGEND_WIFI_IRQ_GPIO);
+	if (legend_wifi_control.irq < 0)
+		goto fail_irq;
+
+	return;
+
+fail_irq:
+	gpio_free(LEGEND_WIFI_IRQ_GPIO);
+}
+
 static struct platform_device legend_rfkill = {
 	.name = "legend_rfkill",
 	.id = -1,
@@ -786,6 +811,7 @@ static struct platform_device legend_oj = {
 		.platform_data	= &legend_oj_data,
 	}
 };
+
 
 static struct msm_i2c_device_platform_data msm_i2c_pdata = {
 	.i2c_clock = 400000,

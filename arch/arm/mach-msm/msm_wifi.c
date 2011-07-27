@@ -22,8 +22,7 @@
 
 static int wifi_probe(struct platform_device *pdev)
 {
-	struct wl12xx_platform_data *wifi_ctrl =
-		(struct wl12xx_platform_data *)(pdev->dev.platform_data);
+	struct wl12xx_platform_data *wifi_ctrl = pdev->dev.platform_data;
 
 	printk(KERN_DEBUG "wifi probe start\n");
 
@@ -43,8 +42,7 @@ static int wifi_probe(struct platform_device *pdev)
 
 static int wifi_remove(struct platform_device *pdev)
 {
-	struct wl12xx_platform_data *wifi_ctrl =
-		(struct w12xx_platform_data *)(pdev->dev.platform_data);
+	struct wl12xx_platform_data *wifi_ctrl = pdev->dev.platform_data;
 
 	printk(KERN_DEBUG "wifi remove start\n");
 	if (!wifi_ctrl)

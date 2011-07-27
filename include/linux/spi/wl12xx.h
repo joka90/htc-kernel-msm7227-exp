@@ -32,10 +32,9 @@
 #define WMPA_SECTION_SIZE_2	(WMPA_NUMBER_OF_BUFFERS * 2048)
 
 struct wl12xx_platform_data {
-	void (*set_power)(bool enable);
-        int (*set_power)(bool enable);
-        int (*set_reset)(bool enable);
-        int (*set_carddetect)(bool enable);
+	int (*set_power)(int val);
+	int (*set_reset)(int val);
+	int (*set_carddetect)(int val);
 	void *(*mem_prealloc)(int section, unsigned long size);
 	/* SDIO only: IRQ number if WLAN_IRQ line is used, 0 for SDIO IRQs */
 	int irq;

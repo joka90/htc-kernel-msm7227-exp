@@ -34,27 +34,6 @@ struct wl12xx_platform_data legend_wifi_control = {
 	.mem_prealloc	= NULL,
 };
 
-static void legend_wl12xx_init(void)
-{
-	int ret;
-
-	ret = gpio_request(LEGEND_WIFI_IRQ_GPIO, "wl1271 irq");
-	if (ret < 0)
-		goto fail_irq;
-
-	ret = gpio_direction_input(LEGEND_WIFI_IRQ_GPIO);
-	if (ret < 0)
-		goto fail_irq;
-
-	legend_wifi_control.irq = gpio_to_irq(LEGEND_WIFI_IRQ_GPIO);
-	if (legend_wifi_control.irq < 0)
-		goto fail_irq;
-
-	return;
-
-fail_irq:
-	gpio_free(LEGEND_WIFI_IRQ_GPIO);
-}
 
 static struct platform_device wifi_ctrl_dev = {
 	.name		= "msm_wifi",
@@ -66,6 +45,7 @@ static struct platform_device wifi_ctrl_dev = {
 	},
 };
 
+
 static int __init legend_wifi_init(void)
 {
 	int ret;
@@ -75,8 +55,10 @@ static int __init legend_wifi_init(void)
 
 	printk("%s: start\n", __func__);
 	ret = platform_device_register(&wifi_ctrl_dev);
+
 	return ret;
 }
+
 
 
 late_initcall(legend_wifi_init);
