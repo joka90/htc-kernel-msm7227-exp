@@ -20,19 +20,41 @@
 #include <linux/vmalloc.h>
 #include <linux/err.h>
 #include <asm/mach-types.h>
-#include <linux/wifi_tiwlan.h>
+#include <linux/spi/wl12xx.h>
 
 extern int legend_wifi_set_carddetect(int val);
 extern int legend_wifi_power(int on);
 extern int legend_wifi_reset(int on);
 
 
-struct wifi_platform_data legend_wifi_control = {
+struct wl12xx_platform_data legend_wifi_control = {
 	.set_power		= legend_wifi_power,
 	.set_reset		= legend_wifi_reset,
 	.set_carddetect	= legend_wifi_set_carddetect,
 	.mem_prealloc	= NULL,
 };
+
+static void legend_wl12xx_init(void)
+{
+	int ret;
+
+	ret = gpio_request(LEGEND_WIFI_IRQ_GPIO, "wl1271 irq");
+	if (ret < 0)
+		goto fail_irq;
+
+	ret = gpio_direction_input(LEGEND_WIFI_IRQ_GPIO);
+	if (ret < 0)
+		goto fail_irq;
+
+	legend_wifi_control.irq = gpio_to_irq(LEGEND_WIFI_IRQ_GPIO);
+	if (legend_wifi_control.irq < 0)
+		goto fail_irq;
+
+	return;
+
+fail_irq:
+	gpio_free(LEGEND_WIFI_IRQ_GPIO);
+}
 
 static struct platform_device wifi_ctrl_dev = {
 	.name		= "msm_wifi",
