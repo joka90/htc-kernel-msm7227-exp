@@ -1086,6 +1086,8 @@ static void __init legend_init(void)
 	legend_init_panel();
 
 	legend_init_keypad();
+
+	legend_wl12xx_init();
 }
 
 static void __init legend_fixup(struct machine_desc *desc, struct tag *tags,
