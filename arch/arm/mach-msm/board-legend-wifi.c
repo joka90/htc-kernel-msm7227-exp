@@ -20,32 +20,53 @@
 #include <linux/vmalloc.h>
 #include <linux/err.h>
 #include <asm/mach-types.h>
-#include <linux/wifi_tiwlan.h>
+#include <linux/wl12xx.h>
 
 extern int legend_wifi_set_carddetect(int val);
 extern int legend_wifi_power(int on);
 extern int legend_wifi_reset(int on);
 
+#define NR_MSM_IRQS 64 /* irqs.h */
+#define MSM_GPIO_TO_INT(n) (NR_MSM_IRQS + (n))
+#define LEGEND_WIFI_IRQ_GPIO	        (29) /*can be found in wifi_off_gpio_table[], in board-legend-mmc.c */
 
-struct wifi_platform_data legend_wifi_control = {
+struct wl12xx_platform_data wl12xx_data = {
 	.set_power		= legend_wifi_power,
 	.set_reset		= legend_wifi_reset,
 	.set_carddetect	= legend_wifi_set_carddetect,
-	.mem_prealloc	= NULL,
+	.board_ref_clock	= WL12XX_REFCLOCK_26,/*From tiwlan.ini STRFRefClock = 1  # Unit: Options 5'bXX000 : Bit 0,1,2 - (0: 19.2MHz; 1: 26MHz; 2: 38.4MHz  (Default); 3: 52MHz;  4: 38.4MHz XTAL) ;*/
+	.use_eeprom = false,
+	.irq = MSM_GPIO_TO_INT(LEGEND_WIFI_IRQ_GPIO),
 };
 
-
-
-
-static struct platform_device wifi_ctrl_dev = {
-	.name		= "msm_wifi",
-	.id		= 1,
-	.num_resources	= 0,
-	.resource	= NULL,
+static struct platform_device wl1271_data_device = {
+	.name           = "wl1271_data",
+	.id             = -1,
 	.dev		= {
-		.platform_data = &legend_wifi_control,
+		.platform_data	= &wl12xx_data,
 	},
 };
+
+static struct platform_device wl1271_data = {
+	.name = "wl1271_data",
+	.id = -1,
+ 	.num_resources	= 0,
+ 	.resource	= NULL,
+	.dev= {
+		.platform_data = &wl12xx_data,
+	},
+
+};
+
+/* platform_device for fake card detect 'driver' */
+static struct platform_device wl1271_cd_device = {
+	.name           = "msm_wifi",
+	.id             = -1,
+ 	.dev		= {
+		.platform_data	= &wl1271_data,
+ 	},
+ };
+
 
 static int __init legend_wifi_init(void)
 {
@@ -54,10 +75,20 @@ static int __init legend_wifi_init(void)
 	if (!machine_is_legend())
 		return 0;
 
+	if (gpio_request(LEGEND_GPIO_WIFI_EN, "wl12xx") ||
+	    gpio_direction_output(LEGEND_GPIO_WIFI_EN, 0))
+		pr_err("Error initializing up WLAN_EN\n");
+	if (wl12xx_set_platform_data(&legend_wl1271_wlan_data))
+		pr_err("Error setting wl12xx data\n");
+
 	printk("%s: start\n", __func__);
-	ret = platform_device_register(&wifi_ctrl_dev);
+
+	ret = platform_device_register(&wl1271_data_device);
+	platform_device_register(&wl1271_cd_device);
+
 	return ret;
 }
+
 
 
 late_initcall(legend_wifi_init);

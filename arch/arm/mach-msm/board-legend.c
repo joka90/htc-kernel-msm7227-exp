@@ -998,23 +998,7 @@ static struct platform_device legend_flashlight_device = {
 	},
 };
 
-struct wl12xx_platform_data legend_wl1271_wlan_data = {
-	.set_power    = legend_wifi_power,
-	.set_reset    = legend_wifi_reset,
-	.set_carddetect  = legend_wifi_set_carddetect,
-	.irq = MSM_GPIO_TO_INT(LEGEND_WIFI_IRQ_GPIO),
-	.use_eeprom	= false,
-	.board_ref_clock = WL12XX_REFCLOCK_26,/* from tiwlan.ini STRFRefClock = 1  # Unit: Options 5'bXX000 : Bit 0,1,2 - (0: 19.2MHz; 1: 26MHz; 2: 38.4MHz  (Default); 3: 52MHz;  4: 38.4MHz XTAL) ;*/
- };
 
-static void legend_init_wl12xx_wifi(void)
-{
-	if (gpio_request(LEGEND_GPIO_WIFI_EN, "wl12xx") ||
-	    gpio_direction_output(LEGEND_GPIO_WIFI_EN, 0))
-		pr_err("Error initializing up WLAN_EN\n");
-	if (wl12xx_set_platform_data(&legend_wl1271_wlan_data))
-		pr_err("Error setting wl12xx data\n");
-}
 
 static void __init legend_init(void)
 {
@@ -1109,8 +1093,6 @@ static void __init legend_init(void)
 	legend_init_panel();
 
 	legend_init_keypad();
-
-	legend_init_wl12xx_wifi();
 }
 
 static void __init legend_fixup(struct machine_desc *desc, struct tag *tags,
