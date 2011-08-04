@@ -20,49 +20,32 @@
 #include <linux/vmalloc.h>
 #include <linux/err.h>
 #include <asm/mach-types.h>
-#include <linux/wl12xx.h>
+#include <linux/wifi_tiwlan.h>
 
 extern int legend_wifi_set_carddetect(int val);
 extern int legend_wifi_power(int on);
 extern int legend_wifi_reset(int on);
 
 
-struct wl12xx_platform_data wl12xx_data = {
+struct wifi_platform_data legend_wifi_control = {
 	.set_power		= legend_wifi_power,
 	.set_reset		= legend_wifi_reset,
 	.set_carddetect	= legend_wifi_set_carddetect,
-	.board_ref_clock	= WL12XX_REFCLOCK_26,/*From tiwlan.ini STRFRefClock = 1  # Unit: Options 5'bXX000 : Bit 0,1,2 - (0: 19.2MHz; 1: 26MHz; 2: 38.4MHz  (Default); 3: 52MHz;  4: 38.4MHz XTAL) ;*/
-	.use_eeprom = false,
+	.mem_prealloc	= NULL,
 };
 
-static struct platform_device wl1271_data_device = {
-	.name           = "wl1271_data",
-	.id             = -1,
+
+
+
+static struct platform_device wifi_ctrl_dev = {
+	.name		= "msm_wifi",
+	.id		= 1,
+	.num_resources	= 0,
+	.resource	= NULL,
 	.dev		= {
-		.platform_data	= &wl12xx_data,
+		.platform_data = &legend_wifi_control,
 	},
 };
-
-static struct platform_device wl1271_data = {
-	.name = "wl1271_data",
-	.id = -1,
- 	.num_resources	= 0,
- 	.resource	= NULL,
-	.dev= {
-		.platform_data = &wl12xx_data,
-	},
-
-};
-
-/* platform_device for fake card detect 'driver' */
-static struct platform_device wl1271_cd_device = {
-	.name           = "msm_wifi",
-	.id             = -1,
- 	.dev		= {
-		.platform_data	= &wl1271_data,
- 	},
- };
-
 
 static int __init legend_wifi_init(void)
 {
@@ -72,14 +55,11 @@ static int __init legend_wifi_init(void)
 		return 0;
 
 	printk("%s: start\n", __func__);
-
-	ret = platform_device_register(&wl1271_data_device);
-	platform_device_register(&wl1271_cd_device);
-
+	ret = platform_device_register(&wifi_ctrl_dev);
 	return ret;
 }
 
 
-
 late_initcall(legend_wifi_init);
+
 
