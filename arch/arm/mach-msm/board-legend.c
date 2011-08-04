@@ -88,7 +88,7 @@ void __init legend_microp_init(void);
 void config_legend_proximity_gpios(int on);
 static int legend_phy_init_seq[] = {0x20, 0x31, 0x1, 0x0D, 0x1, 0x10, -1};
 
-extern struct wl12xx_platform_data legend_wifi_control;
+extern struct wl12xx_platform_data wl12xx_data;
 
 static void legend_phy_reset(void)
 {
@@ -648,8 +648,8 @@ static void legend_wl12xx_init(void)
 	if (ret < 0)
 		goto fail_irq;
 
-	legend_wifi_control.irq = gpio_to_irq(LEGEND_WIFI_IRQ_GPIO);
-	if (legend_wifi_control.irq < 0)
+	wl12xx_data.irq = gpio_to_irq(LEGEND_WIFI_IRQ_GPIO);
+	if (wl12xx_data.irq < 0)
 		goto fail_irq;
 
 	return;

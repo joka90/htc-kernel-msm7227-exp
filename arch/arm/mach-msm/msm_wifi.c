@@ -18,7 +18,7 @@
  * Copyright (C) 2008 Google Inc
  */
 #include <linux/platform_device.h>
-#include <linux/spi/wl12xx.h>
+#include <linux/wl12xx.h>
 #include <linux/proc_fs.h>
 
 extern unsigned char *get_wifi_nvs_ram(void);
@@ -27,6 +27,7 @@ static struct proc_dir_entry *msm_wifi_calibration;
 #define WIFI_NVS_LEN_OFFSET     0x0C
 #define WIFI_NVS_DATA_OFFSET    0x40
 #define WIFI_NVS_MAX_SIZE       0x800UL
+#define SDIO_DRIVER_NAME 	"msm_wifi"
 
 static unsigned long tiwlan_get_nvs_size( void )
 {
@@ -108,7 +109,7 @@ static struct platform_driver wifi_device = {
 	.probe		= wifi_probe,
 	.remove		= wifi_remove,
 	.driver		= {
-		.name   = "msm_wifi",
+		.name   = SDIO_DRIVER_NAME,
 	},
 };
 
@@ -132,4 +133,5 @@ static void __exit msm_wifi_sdio_exit(void)
 
 module_init(msm_wifi_sdio_init);
 module_exit(msm_wifi_sdio_exit);
+MODULE_ALIAS(SDIO_DRIVER_NAME);
 MODULE_LICENSE("GPL");
