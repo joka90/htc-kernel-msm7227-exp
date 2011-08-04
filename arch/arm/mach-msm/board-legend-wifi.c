@@ -75,12 +75,6 @@ static int __init legend_wifi_init(void)
 	if (!machine_is_legend())
 		return 0;
 
-	if (gpio_request(LEGEND_GPIO_WIFI_EN, "wl12xx") ||
-	    gpio_direction_output(LEGEND_GPIO_WIFI_EN, 0))
-		pr_err("Error initializing up WLAN_EN\n");
-	if (wl12xx_set_platform_data(&legend_wl1271_wlan_data))
-		pr_err("Error setting wl12xx data\n");
-
 	printk("%s: start\n", __func__);
 
 	ret = platform_device_register(&wl1271_data_device);

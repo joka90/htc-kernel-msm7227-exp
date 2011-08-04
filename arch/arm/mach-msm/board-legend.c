@@ -88,9 +88,7 @@ void __init legend_microp_init(void);
 void config_legend_proximity_gpios(int on);
 static int legend_phy_init_seq[] = {0x20, 0x31, 0x1, 0x0D, 0x1, 0x10, -1};
 
-extern int legend_wifi_set_carddetect(int val);
-extern int legend_wifi_power(int on);
-extern int legend_wifi_reset(int on);
+extern struct wl12xx_platform_data wl12xx_data;
 
 static void legend_phy_reset(void)
 {
@@ -999,6 +997,14 @@ static struct platform_device legend_flashlight_device = {
 };
 
 
+static void legend_init_wl12xx_wifi(void)
+{
+	if (gpio_request(LEGEND_GPIO_WIFI_EN, "wl12xx") ||
+	    gpio_direction_output(LEGEND_GPIO_WIFI_EN, 0))
+		pr_err("Error initializing up WLAN_EN\n");
+	if (wl12xx_set_platform_data(&wl12xx_data))
+		pr_err("Error setting wl12xx data\n");
+}
 
 static void __init legend_init(void)
 {
@@ -1093,6 +1099,8 @@ static void __init legend_init(void)
 	legend_init_panel();
 
 	legend_init_keypad();
+
+	legend_init_wl12xx_wifi();
 }
 
 static void __init legend_fixup(struct machine_desc *desc, struct tag *tags,
