@@ -234,6 +234,7 @@ static unsigned int legend_wifi_status(struct device *dev)
 	return legend_wifi_cd;
 }
 
+
 static struct mmc_platform_data legend_wifi_data = {
 	.ocr_mask		= MMC_VDD_28_29,
 	.status			= legend_wifi_status,
@@ -241,7 +242,7 @@ static struct mmc_platform_data legend_wifi_data = {
 	.embedded_sdio		= &legend_wifi_emb_data,
 #ifdef CONFIG_MMC_SUPPORT_EXTERNEL_DRIVER
 	.use_ext_sdiodrv	= 1,
-	.ext_sdiodrv_name	= "TIWLAN_SDIO",
+	.ext_sdiodrv_name	= "wl1271_sdio",
 #endif
 };
 

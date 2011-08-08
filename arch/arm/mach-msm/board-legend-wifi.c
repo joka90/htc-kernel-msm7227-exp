@@ -39,33 +39,15 @@ struct wl12xx_platform_data wl12xx_data = {
 	.irq = MSM_GPIO_TO_INT(LEGEND_WIFI_IRQ_GPIO),
 };
 
-static struct platform_device wl1271_data_device = {
-	.name           = "wl1271_data",
-	.id             = -1,
+static struct platform_device wifi_ctrl_dev = {
+	.name		= "msm_wifi",
+	.id		= 1,
+	.num_resources	= 0,
+	.resource	= NULL,
 	.dev		= {
-		.platform_data	= &wl12xx_data,
-	},
-};
-
-static struct platform_device wl1271_data = {
-	.name = "wl1271_data",
-	.id = -1,
- 	.num_resources	= 0,
- 	.resource	= NULL,
-	.dev= {
 		.platform_data = &wl12xx_data,
 	},
-
 };
-
-/* platform_device for fake card detect 'driver' */
-static struct platform_device wl1271_cd_device = {
-	.name           = "msm_wifi",
-	.id             = -1,
- 	.dev		= {
-		.platform_data	= &wl1271_data,
- 	},
- };
 
 
 static int __init legend_wifi_init(void)
@@ -76,9 +58,7 @@ static int __init legend_wifi_init(void)
 		return 0;
 
 	printk("%s: start\n", __func__);
-
-	ret = platform_device_register(&wl1271_data_device);
-	platform_device_register(&wl1271_cd_device);
+	ret = platform_device_register(&wifi_ctrl_dev);
 
 	return ret;
 }
@@ -86,5 +66,6 @@ static int __init legend_wifi_init(void)
 
 
 late_initcall(legend_wifi_init);
+
 
 

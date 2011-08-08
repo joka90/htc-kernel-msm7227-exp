@@ -1,7 +1,7 @@
 #
 # Automatically generated make config: don't edit
 # Linux kernel version: 2.6.35.13
-# Wed Jul 27 17:55:11 2011
+# Mon Aug  8 15:01:40 2011
 #
 CONFIG_ARM=y
 CONFIG_SYS_SUPPORTS_APM_EMULATION=y
@@ -1078,7 +1078,8 @@ CONFIG_WLAN=y
 # CONFIG_LIBERTAS is not set
 # CONFIG_P54_COMMON is not set
 # CONFIG_RT2X00 is not set
-# CONFIG_WL12XX is not set
+CONFIG_WL12XX=m
+# CONFIG_WL1251 is not set
 CONFIG_WL12XX_PLATFORM_DATA=y
 CONFIG_BCM4329=m
 CONFIG_BCM4329_FW_PATH="/system/etc/firmware/fw_bcm4329.bin"
