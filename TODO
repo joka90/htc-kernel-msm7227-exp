@@ -3,9 +3,10 @@
 *Port to legend's cyanogen build
 
 Status:
-To compile compat wireless I had to remove some defines, You will see...
-Working and loading modules with out some errors from compat wireless 2.6.39
-tiwlan is (working/compiled) as unstable as before...
+Driver is loading, time to debug and fix cyanogen to us this
+
+Debug
+http://processors.wiki.ti.com/index.php/Driver_debug
 
 
 # su
