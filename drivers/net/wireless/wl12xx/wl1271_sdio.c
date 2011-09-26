@@ -28,21 +28,22 @@
 #include <linux/mmc/sdio_func.h>
 #include <linux/mmc/sdio_ids.h>
 #include <linux/mmc/card.h>
-#include <plat/gpio.h>
+/*#include <plat/gpio.h>*/
 
 #include "wl1271.h"
 #include "wl12xx_80211.h"
 #include "wl1271_io.h"
 
-
-#define RX71_WL1271_IRQ_GPIO		42
+#define NR_MSM_IRQS 64 /* irqs.h */
+#define gpio_to_irq(n) (NR_MSM_IRQS + (n))
+#define LEGEND_WIFI_IRQ_GPIO	        (29) /*can be found in wifi_off_gpio_table[], in board-legend-mmc.c */
 
 #ifndef SDIO_VENDOR_ID_TI
-#define SDIO_VENDOR_ID_TI		0x0097
+#define SDIO_VENDOR_ID_TI		0x104c
 #endif
 
 #ifndef SDIO_DEVICE_ID_TI_WL1271
-#define SDIO_DEVICE_ID_TI_WL1271	0x4076
+#define SDIO_DEVICE_ID_TI_WL1271	0x9066
 #endif
 
 static const struct sdio_device_id wl1271_devices[] = {
@@ -203,7 +204,7 @@ static int __devinit wl1271_probe(struct sdio_func *func,
 	/* Grab access to FN0 for ELP reg. */
 	func->card->quirks |= MMC_QUIRK_LENIENT_FN0;
 
-	wl->irq = gpio_to_irq(RX71_WL1271_IRQ_GPIO);
+	wl->irq = gpio_to_irq(LEGEND_WIFI_IRQ_GPIO);
 	if (wl->irq < 0) {
 		ret = wl->irq;
 		wl1271_error("could not get irq!");
