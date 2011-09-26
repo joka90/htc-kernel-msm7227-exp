@@ -208,7 +208,6 @@ static const struct dev_pm_ops sdio_bus_pm_ops = {
 		pm_generic_runtime_resume,
 		pm_generic_runtime_idle
 	)
-	.prepare = sdio_bus_pm_prepare,
 };
 
 #define SDIO_PM_OPS_PTR	(&sdio_bus_pm_ops)

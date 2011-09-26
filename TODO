@@ -5,6 +5,9 @@
 Status:
 Driver is loading, time to debug and fix cyanogen to us this
 
+Remove runtime pm, as this donsent work on the htc kernel
+http://gitorious.org/htc-msm-2-6-32/compat-wireless/trees/no-runtime-pm
+
 Debug
 http://processors.wiki.ti.com/index.php/Driver_debug
 
