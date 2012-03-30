@@ -166,104 +166,59 @@ static struct platform_device hw3d_device = {
 };
 #endif
 
-#if defined(CONFIG_GPU_MSM_KGSL) && !defined(CONFIG_ARCH_MSM8X60)
-static struct resource msm_kgsl_resources[] = {
+
+static struct resource kgsl_3d0_resources[] = {
 	{
-		.name	= "kgsl_reg_memory",
+		.name	= KGSL_3D0_REG_MEMORY,
 		.start	= MSM_GPU_REG_PHYS,
 		.end	= MSM_GPU_REG_PHYS + MSM_GPU_REG_SIZE - 1,
 		.flags	= IORESOURCE_MEM,
 	},
 	{
-		.name	= "kgsl_phys_memory",
-		.flags	= IORESOURCE_MEM,
-	},
-	{
-		.name   = "kgsl_yamato_irq",
-#ifdef CONFIG_ARCH_MSM7X30
-		.start  = INT_GRP_3D,
-		.end    = INT_GRP_3D,
-#else
+		.name   = KGSL_3D0_IRQ,
 		.start	= INT_GRAPHICS,
 		.end	= INT_GRAPHICS,
-#endif
 		.flags	= IORESOURCE_IRQ,
 	},
-#ifdef CONFIG_ARCH_MSM7X30
-	{
-		.name   = "kgsl_2d0_reg_memory",
-		.start  = MSM_GPU_2D_REG_PHYS, /* Z180 base address */
-		.end    = MSM_GPU_2D_REG_PHYS + MSM_GPU_2D_REG_SIZE - 1,
-		.flags  = IORESOURCE_MEM,
-	},
-	{
-		.name   = "kgsl_2d0_irq",
-		.start  = INT_GRP_2D,
-		.end    = INT_GRP_2D,
-		.flags  = IORESOURCE_IRQ,
-	},
-#endif
 };
 
-#ifdef CONFIG_ARCH_MSM7X30
-static struct kgsl_platform_data kgsl_pdata = {
-#ifdef CONFIG_MSM_NPA_SYSTEM_BUS
-	/* NPA Flow IDs */
-	.high_axi_3d = MSM_AXI_FLOW_3D_GPU_HIGH,
-	.high_axi_2d = MSM_AXI_FLOW_2D_GPU_HIGH,
-#else
-	/* AXI rates in KHz */
-	.high_axi_3d = 192000,
-	.high_axi_2d = 192000,
-#endif
-	.max_grp2d_freq = 0,
-	.min_grp2d_freq = 0,
-	.set_grp2d_async = NULL, /* HW workaround, run Z180 SYNC @ 192 MHZ */
-	.max_grp3d_freq = 245760000,
-	.min_grp3d_freq = 192000000,
-	.set_grp3d_async = set_grp3d_async,
-	.imem_clk_name = "imem_clk",
-	.grp3d_clk_name = "grp_clk",
-	.grp2d0_clk_name = "grp_2d_clk",
-};
-#else	/* 7x27 */
-static struct kgsl_platform_data kgsl_pdata = {
-	.high_axi_3d = 160000,
-	.max_grp2d_freq = 0,
-	.min_grp2d_freq = 0,
-	.set_grp2d_async = NULL,
-	.max_grp3d_freq = 0,
-	.min_grp3d_freq = 0,
-	.set_grp3d_async = NULL,
-	.imem_clk_name = "imem_clk",
-	.grp3d_clk_name = "grp_clk",
-	.grp3d_pclk_name = "grp_pclk",
-	.grp2d0_clk_name = NULL,
-	.idle_timeout_3d = HZ/2,
-	.idle_timeout_2d = 0,
-#ifdef CONFIG_KGSL_PER_PROCESS_PAGE_TABLE
-	.pt_va_size = SZ_32M,
-	/* Maximum of 32 concurrent processes */
-	.pt_max_count = 32,
-#else
-	.pt_va_size = SZ_128M,
-	/* We only ever have one pagetable for everybody */
-	.pt_max_count = 1,
-#endif
-};
-#endif
-
-static struct platform_device msm_kgsl_device = {
-	.name		= "kgsl",
-	.id		= -1,
-	.resource	= msm_kgsl_resources,
-	.num_resources	= ARRAY_SIZE(msm_kgsl_resources),
-	.dev = {
-		.platform_data = &kgsl_pdata,
+static struct kgsl_device_platform_data kgsl_3d0_pdata = {
+	.pwr_data = {
+		.pwrlevel = {
+			{
+				.gpu_freq = 128000000,
+				.bus_freq = 128000000,
+			},
+		},
+		.init_level = 0,
+		.num_levels = 1,
+		.set_grp_async = NULL,
+		.idle_timeout = HZ/5,
+		.nap_allowed = true,
+	},
+	.clk = {
+		.name = {
+			.clk = "grp_clk",
+			.pclk = "grp_pclk",
+		},
+	},
+	.imem_clk_name = {
+		.clk = "imem_clk",
+		.pclk = NULL,
 	},
 };
 
-#if !defined(CONFIG_ARCH_MSM7X30)
+struct platform_device msm_kgsl_3d0 = {
+         .name = "kgsl-3d0",
+         .id = 0,
+         .num_resources = ARRAY_SIZE(kgsl_3d0_resources),
+         .resource = kgsl_3d0_resources,
+         .dev = {
+                 .platform_data = &kgsl_3d0_pdata,
+         },
+};
+
+#if 0
 #define PWR_RAIL_GRP_CLK               8
 static int kgsl_power_rail_mode(int follow_clk)
 {
@@ -283,7 +238,6 @@ static int kgsl_power(bool on)
 }
 #endif
 
-#endif
 
 void __init msm_add_mem_devices(struct msm_pmem_setting *setting)
 {
@@ -338,11 +292,11 @@ void __init msm_add_mem_devices(struct msm_pmem_setting *setting)
  * first then power on gpu, thus we move power on
  * into kgsl driver
  */
-#if !defined(CONFIG_ARCH_MSM7X30)
+#if 0
 		kgsl_power_rail_mode(0);
 		kgsl_power(true);
 #endif
-		platform_device_register(&msm_kgsl_device);
+		platform_device_register(&msm_kgsl_3d0);
 	}
 #endif
 

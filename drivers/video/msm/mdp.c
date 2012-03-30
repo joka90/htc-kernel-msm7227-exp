@@ -201,7 +201,7 @@ static irqreturn_t mdp_isr(int irq, void *data)
 //		mdp_irq_mask);
 
 	if (mdp_dma_timer_enable) {
-		del_timer(&mdp->dma_timer);
+		del_timer_sync(&mdp->dma_timer);
 		mdp_dma_timer_enable = 0;
 		PR_DISP_ERR("%s: stop dma timer\n", __func__);
 	}
@@ -293,37 +293,29 @@ static void mdp_do_dma_timer(unsigned long data)
 	struct mdp_info *mdp = (struct mdp_info *) data;
 	unsigned long irq_flags=0;
 	int i;
-
 	spin_lock_irqsave(&mdp->lock, irq_flags);
-	// Check that we still need this timer or not?
-	if (mdp_dma_timer_enable) {
-		status = mdp_readl(mdp, MDP_INTR_STATUS);
-		mdp_writel(mdp, mdp_irq_mask, MDP_INTR_CLEAR);
+	status = mdp_readl(mdp, MDP_INTR_STATUS);
+	mdp_writel(mdp, mdp_irq_mask, MDP_INTR_CLEAR);
 
-		PR_DISP_WARN("mdp_do_dma_timer: status=0x%x mdp_irq_mask=0x%x\n", status, mdp_irq_mask);
-
-		for (i = 0; i < MSM_MDP_NUM_INTERFACES; ++i) {
-			struct mdp_out_interface *out_if = &mdp->out_if[i];
-			if (mdp_irq_mask & out_if->dma_mask) {
-				if (out_if->dma_cb) {
-					out_if->dma_cb->func(out_if->dma_cb);
-					out_if->dma_cb = NULL;
-				}
-				wake_up(&out_if->dma_waitqueue);
+	for (i = 0; i < MSM_MDP_NUM_INTERFACES; ++i) {
+		struct mdp_out_interface *out_if = &mdp->out_if[i];
+		if (mdp_irq_mask & out_if->dma_mask) {
+			if (out_if->dma_cb) {
+				out_if->dma_cb->func(out_if->dma_cb);
+				out_if->dma_cb = NULL;
 			}
-			if (mdp_irq_mask & out_if->irq_mask) {
-				out_if->irq_cb->func(out_if->irq_cb);
-				out_if->irq_cb = NULL;
-			}
+			wake_up(&out_if->dma_waitqueue);
 		}
-
-#ifndef CONFIG_MSM_MDP40
-		if (mdp_irq_mask & DL0_ROI_DONE)
-			mdp_ppp_handle_isr(mdp, DL0_ROI_DONE);
-#endif //CONFIG_MSM_MDP40
-
-		locked_disable_mdp_irq(mdp, mdp_irq_mask);
+		if (mdp_irq_mask & out_if->irq_mask) {
+			out_if->irq_cb->func(out_if->irq_cb);
+			out_if->irq_cb = NULL;
+		}
 	}
+
+	if (mdp_irq_mask & DL0_ROI_DONE)
+		mdp_ppp_handle_isr(mdp, DL0_ROI_DONE);
+
+	locked_disable_mdp_irq(mdp, mdp_irq_mask);
 
 	spin_unlock_irqrestore(&mdp->lock, irq_flags);
 
@@ -600,12 +592,21 @@ void mdp_dma(struct mdp_device *mdp_dev, uint32_t addr, uint32_t stride,
 	spin_lock_irqsave(&mdp->lock, flags);
 	if (locked_enable_mdp_irq(mdp, out_if->dma_mask)) {
 		mdp_dma_user_requested++;
-		if (mdp_dma_user_requested > 2) {
+                if (mdp_dma_user_requested > 4) {
                         PR_DISP_ERR("%s: really busy? start dma timer\n", __func__);
 			/* something wrong in dma, workaround it */
 			mdp_dma_timer_enable = 1;
 			mdp_dma_user_requested = 0;
-		} else{
+		}
+		else if(mdp_dma_user_requested > 3){
+			mdelay(50);
+			PR_DISP_ERR("%s: busy 3\n", __func__);
+		}
+		else if(mdp_dma_user_requested > 2){
+			mdelay(30);
+			PR_DISP_ERR("%s: busy 2\n", __func__);
+		}
+                else{
 			PR_DISP_ERR("%s: busy\n", __func__);
 			goto done;
 		}
@@ -1228,6 +1229,7 @@ int mdp_probe(struct platform_device *pdev)
 
 	mdp->clk = clk_get(&pdev->dev, "mdp_clk");
 	if (IS_ERR(mdp->clk)) {
+		kfree(mdp);
 		PR_DISP_INFO("mdp: failed to get mdp clk");
 		ret = PTR_ERR(mdp->clk);
 		goto error_get_mdp_clk;

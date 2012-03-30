@@ -315,17 +315,9 @@ static void blit_blend(struct mdp_blit_req *req, struct ppp_regs *regs)
 static int blit_scale(struct mdp_info *mdp, struct mdp_blit_req *req,
 		      struct ppp_regs *regs)
 {
-	struct mdp_rect dst_rect, src_rect;
+	struct mdp_rect dst_rect;
 
 	memcpy(&dst_rect, &req->dst_rect, sizeof(dst_rect));
-	memcpy(&src_rect, &req->src_rect, sizeof(src_rect));
-
-	/*fix green line for the two resolution (480x800 and 640x480)*/
-	if ((src_rect.w == 800 && src_rect.h == 480) ||
-			(src_rect.w == 480 && src_rect.h == 640)) {
-		dst_rect.h += 1;
-	}
-
 	if (req->flags & MDP_ROT_90) {
 		dst_rect.w = req->dst_rect.h;
 		dst_rect.h = req->dst_rect.w;
