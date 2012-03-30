@@ -22,7 +22,6 @@
 #include <linux/srcu.h>
 #include <linux/rculist.h>
 #include <linux/wait.h>
-#include <linux/module.h>
 
 #include <linux/fsnotify_backend.h>
 #include "fsnotify.h"
@@ -170,7 +169,6 @@ void fsnotify_put_group(struct fsnotify_group *group)
 	fsnotify_recalc_global_mask();
 	fsnotify_destroy_group(group);
 }
-EXPORT_SYMBOL(fsnotify_put_group);
 
 /*
  * Simply run the fsnotify_groups list and find a group which matches
@@ -254,4 +252,3 @@ struct fsnotify_group *fsnotify_obtain_group(unsigned int group_num, __u32 mask,
 
 	return group;
 }
-EXPORT_SYMBOL(fsnotify_obtain_group);

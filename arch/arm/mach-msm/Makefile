@@ -41,7 +41,6 @@ obj-$(CONFIG_MSM_PIL) += peripheral-reset.o
 obj-$(CONFIG_MSM_DSPS) += msm_dsps.o
 obj-$(CONFIG_MSM_FIQ_SUPPORT) += fiq_glue.o
 obj-$(CONFIG_MACH_TROUT) += board-trout-rfkill.o
-obj-$(CONFIG_TROUT_WIFI) += msm_wifi.o htc_wifi_nvs.o
 
 obj-$(CONFIG_ARCH_MSM7X30) += rpc_hsusb.o
 
@@ -404,6 +403,7 @@ obj-$(CONFIG_MACH_HOLIDAY) += board-holiday-mmc.o board-holiday-wifi.o
 obj-$(CONFIG_ARCH_MSM7X00A) += msm_vibrator.o devices_htc.o
 obj-$(CONFIG_ARCH_MSM7225) += msm_vibrator.o devices_htc.o htc_wifi_nvs.o htc_awb_cal.o htc_bluetooth.o
 obj-$(CONFIG_ARCH_MSM7227) += msm_vibrator.o devices_htc.o htc_wifi_nvs.o htc_awb_cal.o
+obj-$(CONFIG_ARCH_MSM7227) += internal_power_rail.o
 obj-$(CONFIG_ARCH_QSD8X50) += msm_vibrator.o devices_htc.o
 obj-$(CONFIG_ARCH_MSM7X30) += msm_vibrator.o devices_htc.o
 obj-$(CONFIG_ARCH_MSM8X60) += devices_htc.o htc_wifi_nvs.o htc_awb_cal.o

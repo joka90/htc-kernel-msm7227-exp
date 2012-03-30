@@ -305,8 +305,13 @@ int rtc_set_alarm(struct rtc_device *rtc, struct rtc_wkalrm *alarm)
 		err = -ENODEV;
 	else if (!rtc->ops->set_alarm)
 		err = -EINVAL;
-	else
+	else {
+		if (alarm->time.tm_sec > 0) {
+			alarm->time.tm_sec = 0;
+			alarm->time.tm_min++;
+		}
 		err = rtc->ops->set_alarm(rtc->dev.parent, alarm);
+	}
 
 	mutex_unlock(&rtc->ops_lock);
 	return err;

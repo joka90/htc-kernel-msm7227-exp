@@ -292,7 +292,7 @@ static void marvelc_phy_reset(void)
 
 #ifdef CONFIG_USB_ANDROID
 static uint32_t usb_ID_PIN_input_table[] = {
-	PCOM_GPIO_CFG(MARVELC_GPIO_USB_ID_PIN, 0, GPIO_INPUT, GPIO_PULL_UP, GPIO_4MA),
+	PCOM_GPIO_CFG(MARVELC_GPIO_USB_ID_PIN, 0, GPIO_INPUT, GPIO_NO_PULL, GPIO_4MA),
 };
 
 static uint32_t usb_ID_PIN_ouput_table[] = {
@@ -314,7 +314,8 @@ static struct msm_hsusb_platform_data msm_hsusb_pdata = {
 	.phy_init_seq		= marvelc_phy_init_seq,
 	.phy_reset		= marvelc_phy_reset,
 	.usb_id_pin_gpio =  MARVELC_GPIO_USB_ID_PIN,
-	.accessory_detect	= 1, /* detect by ID pin gpio */
+	.accessory_detect	= 2, /* detect by ADC */
+	.use_microp_adc		= true,
 	.config_usb_id_gpios	= config_marvelc_usb_id_gpios,
 };
 

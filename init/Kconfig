@@ -1090,7 +1090,7 @@ config COMPAT_BRK
 
 choice
 	prompt "Choose SLAB allocator"
-	default SLQB
+	default SLUB
 	help
 	   This option allows to select a slab allocator.
 
@@ -1110,11 +1110,6 @@ config SLUB
 	   of queues of objects. SLUB can use memory efficiently
 	   and has enhanced diagnostics. SLUB is the default choice for
 	   a slab allocator.
-
-config SLQB
-	bool "SLQB (Queued allocator)"
-	help
-	  SLQB is a proposed new slab allocator.
 
 config SLOB
 	depends on EMBEDDED
@@ -1196,7 +1191,7 @@ config HAVE_GENERIC_DMA_COHERENT
 config SLABINFO
 	bool
 	depends on PROC_FS
-	depends on SLAB || SLUB_DEBUG || SLQB
+	depends on SLAB || SLUB_DEBUG
 	default y
 
 config RT_MUTEXES
@@ -1236,14 +1231,6 @@ config MODULE_FORCE_LOAD
 	  Allow loading of modules without version information (ie. modprobe
 	  --force).  Forced module loading sets the 'F' (forced) taint flag and
 	  is usually a really bad idea.
-
-config MODULE_FORCE_VERMAGIC
-	bool "Allow forced loading of modules with bad vermagic"
-	default n
-	depends on MODULE_FORCE_LOAD
-	help
-	  Allow loading of modules with version information that does not match
-	  the currently running kernel. This is very bad.
 
 config MODULE_UNLOAD
 	bool "Module unloading"

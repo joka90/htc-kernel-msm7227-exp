@@ -22,7 +22,6 @@
 #include <linux/scatterlist.h>
 #include <linux/log2.h>
 #include <linux/regulator/consumer.h>
-#include <linux/pm_runtime.h>
 #include <linux/wakelock.h>
 
 #include <linux/mmc/card.h>
@@ -60,7 +59,6 @@ int mmc_assume_removable;
 #else
 int mmc_assume_removable = 1;
 #endif
-EXPORT_SYMBOL(mmc_assume_removable);
 module_param_named(removable, mmc_assume_removable, bool, 0644);
 MODULE_PARM_DESC(
 	removable,
@@ -256,7 +254,7 @@ void mmc_wait_for_req(struct mmc_host *host, struct mmc_request *mrq)
 	} else
 #endif
 #endif
-		wait_for_completion_io(&complete);
+		wait_for_completion(&complete);
 
 }
 
@@ -566,14 +564,7 @@ int mmc_try_claim_host(struct mmc_host *host)
 }
 EXPORT_SYMBOL(mmc_try_claim_host);
 
-/**
- *	mmc_do_release_host - release a claimed host
- *	@host: mmc host to release
- *
- *	If you successfully claimed a host, this function will
- *	release it again.
- */
-void mmc_do_release_host(struct mmc_host *host)
+static void mmc_do_release_host(struct mmc_host *host)
 {
 	unsigned long flags;
 
@@ -588,7 +579,6 @@ void mmc_do_release_host(struct mmc_host *host)
 		wake_up(&host->wq);
 	}
 }
-EXPORT_SYMBOL(mmc_do_release_host);
 
 void mmc_host_deeper_disable(struct work_struct *work)
 {
@@ -629,8 +619,9 @@ int mmc_host_lazy_disable(struct mmc_host *host)
 
 	if (host->disable_delay) {
 		wake_lock(&host->wakelock);
-		return queue_delayed_work(workqueue, &host->disable,
+		queue_delayed_work(workqueue, &host->disable,
 				msecs_to_jiffies(host->disable_delay));
+		return 0;
 	} else
 		return mmc_host_do_disable(host, 1);
 }
@@ -1169,20 +1160,16 @@ void mmc_rescan(struct work_struct *work)
 
 	mmc_bus_get(host);
 
-	/*
-	 * if there is a _removable_ card registered, check whether it is
-	 * still present
-	 */
-	if (host->bus_ops && host->bus_ops->detect && !host->bus_dead
-	    && !(host->caps & MMC_CAP_NONREMOVABLE)) {
+	/* if there is a card registered, check whether it is still present */
+	if ((host->bus_ops != NULL) && host->bus_ops->detect && !host->bus_dead) {
 		host->bus_ops->detect(host);
-		/* If the card was removed the bus will be marked
-		 * as dead - extend the wakelock so userspace
-		 * can respond */
-		if (host->bus_dead)
-			extend_wakelock = 1;
-	}
 
+	/* If the card was removed the bus will be marked
+	 * as dead - extend the wakelock so userspace
+	 * can respond */
+	if (host->bus_dead)
+		extend_wakelock = 1;
+	}
 	mmc_bus_put(host);
 
 
@@ -1308,45 +1295,37 @@ void mmc_stop_host(struct mmc_host *host)
 	mmc_power_off(host);
 }
 
-int mmc_power_save_host(struct mmc_host *host)
+void mmc_power_save_host(struct mmc_host *host)
 {
-	int ret = 0;
-	
 	mmc_bus_get(host);
 
 	if (!host->bus_ops || host->bus_dead || !host->bus_ops->power_restore) {
 		mmc_bus_put(host);
-		return -EINVAL;
+		return;
 	}
 
 	if (host->bus_ops->power_save)
-		ret = host->bus_ops->power_save(host);
+		host->bus_ops->power_save(host);
 
 	mmc_bus_put(host);
 
 	mmc_power_off(host);
-
-	return ret;
 }
 EXPORT_SYMBOL(mmc_power_save_host);
 
-int mmc_power_restore_host(struct mmc_host *host)
+void mmc_power_restore_host(struct mmc_host *host)
 {
-	int ret;
-
 	mmc_bus_get(host);
 
 	if (!host->bus_ops || host->bus_dead || !host->bus_ops->power_restore) {
 		mmc_bus_put(host);
-		return -EINVAL;
+		return;
 	}
 
 	mmc_power_up(host);
-	ret = host->bus_ops->power_restore(host);
+	host->bus_ops->power_restore(host);
 
 	mmc_bus_put(host);
-
-	return ret;
 }
 EXPORT_SYMBOL(mmc_power_restore_host);
 
@@ -1461,18 +1440,6 @@ int mmc_resume_host(struct mmc_host *host)
 		if (!(host->pm_flags & MMC_PM_KEEP_POWER)) {
 			mmc_power_up(host);
 			mmc_select_voltage(host, host->ocr);
-			/*
-			 * Tell runtime PM core we just powered up the card,
-			 * since it still believes the card is powered off.
-			 * Note that currently runtime PM is only enabled
-			 * for SDIO cards that are MMC_CAP_POWER_OFF_CARD
-			 */
-			if (mmc_card_sdio(host->card) &&
-				(host->caps & MMC_CAP_POWER_OFF_CARD)) {
-				pm_runtime_disable(&host->card->dev);
-				pm_runtime_set_active(&host->card->dev);
-				pm_runtime_enable(&host->card->dev);
-			}
 		}
 		BUG_ON(!host->bus_ops->resume);
 		err = host->bus_ops->resume(host);

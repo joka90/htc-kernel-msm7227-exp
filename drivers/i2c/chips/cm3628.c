@@ -135,6 +135,7 @@ static uint8_t ps_offset_adc2;
 struct cm3628_info *lp_info;
 int enable_log = 0;
 int fLevel=-1;
+int check_psensor = 0;
 static struct mutex als_enable_mutex, als_disable_mutex, als_get_adc_mutex;
 static int lightsensor_enable(struct cm3628_info *lpi);
 static int lightsensor_disable(struct cm3628_info *lpi);
@@ -421,6 +422,7 @@ static void report_psensor_input_event(struct cm3628_info *lpi, int interrupt_fl
 		D("[PS][CM3628] proximity i2c err, report %s, ps_data=%d, record_init_fail %d\n",
 			val ? "FAR" : "NEAR", ps_data, record_init_fail);
 	}
+	check_psensor = !val;
 	if (lpi->ps_debounce == 1 &&
 		lpi->mfg_mode != NO_IGNORE_BOOT_MODE) {
 		if (val == 0) {

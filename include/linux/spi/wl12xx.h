@@ -24,21 +24,11 @@
 #ifndef _LINUX_SPI_WL12XX_H
 #define _LINUX_SPI_WL12XX_H
 
-#define WMPA_NUMBER_OF_SECTIONS	3
-#define WMPA_NUMBER_OF_BUFFERS	160
-#define WMPA_SECTION_HEADER	24
-#define WMPA_SECTION_SIZE_0	(WMPA_NUMBER_OF_BUFFERS * 64)
-#define WMPA_SECTION_SIZE_1	(WMPA_NUMBER_OF_BUFFERS * 256)
-#define WMPA_SECTION_SIZE_2	(WMPA_NUMBER_OF_BUFFERS * 2048)
-
 struct wl12xx_platform_data {
-	int (*set_power)(int val);
-	int (*set_reset)(int val);
-	int (*set_carddetect)(int val);
-	void *(*mem_prealloc)(int section, unsigned long size);
+	void (*set_power)(bool enable);
 	/* SDIO only: IRQ number if WLAN_IRQ line is used, 0 for SDIO IRQs */
 	int irq;
-	bool use_eeprom;/* not in patch */
+	bool use_eeprom;
 };
 
 #endif

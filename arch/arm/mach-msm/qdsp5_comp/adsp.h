@@ -335,6 +335,7 @@ extern int adsp_init_info(struct adsp_info *info);
 #define QDSP_MODULE_MIDI                    0x0106dd95
 #define QDSP_MODULE_GAUDIO                  0x0106dd96
 #define QDSP_MODULE_VDEC_LP_MODE            0x0106dd97
+#define QDSP_MODULE_VIDEO_AAC_VOC_TURBO     0x01089f77
 #define QDSP_MODULE_MAX                     0x7fffffff
 
 /* DO NOT USE: Force this enum to be a 32bit type to improve speed */

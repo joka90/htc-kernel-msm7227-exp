@@ -43,7 +43,7 @@ obj-y += mddi_client_novb9f6_5560.o
 obj-y += mddi_client_renesas_R61408.o
 obj-y += mddi_client_renesas_R61531.o
 obj-y += mddi_client_s6d04d1.o
-obj-y += mddi_client_s6d05a0.o
+obj-y += mddi_client_s6d05a3.o
 obj-y += mddi_client_hx8356.o mddi_himax_cabc.o
 endif
 

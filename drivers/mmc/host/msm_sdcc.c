@@ -48,6 +48,7 @@
 #include <mach/clk.h>
 #include <mach/dma.h>
 #include <mach/htc_pwrsink.h>
+#include <mach/perflock.h>
 
 #include "msm_sdcc.h"
 
@@ -113,6 +114,13 @@ extern void mmc_wimax_enable_host_wakeup(int on);
 static int mmc_wimax_get_status(void) { return 0; }
 static int mmc_wimax_get_busclk_pwrsave(void) { return 0; }
 #endif
+
+/* HTC_CSP_START */
+int wlan_ioprio_idle = 0;
+EXPORT_SYMBOL(wlan_ioprio_idle);
+struct perf_lock wlan_perf_lock;
+EXPORT_SYMBOL(wlan_perf_lock);
+/* HTC_CSP_END */
 
 #if IRQ_DEBUG == 1
 static char *irq_status_bits[] = { "cmdcrcfail", "datcrcfail", "cmdtimeout",
@@ -1284,16 +1292,6 @@ msmsdcc_request(struct mmc_host *mmc, struct mmc_request *mrq)
 	WARN_ON(host->pwr == 0);
 
 	spin_lock_irqsave(&host->lock, flags);
-	/*
-	 * Enable clocks for SDIO clients if they are already turned off
-	 * as part of their low-power management.
-	 */
-	if (mmc->card && (mmc->card->type == MMC_TYPE_SDIO) && !host->clks_on) {
-		mmc->ios.clock = host->clk_rate;
-		spin_unlock(&host->lock);
-		mmc->ops->set_ios(host->mmc, &host->mmc->ios);
-		spin_lock(&host->lock);
-	}
 
 	host->stats.reqs++;
 
@@ -2094,6 +2092,9 @@ static struct platform_driver msmsdcc_driver = {
 
 static int __init msmsdcc_init(void)
 {
+		/* HTC_CSP_START */
+		perf_lock_init(&wlan_perf_lock, PERF_LOCK_HIGHEST, "bcm4329");
+		/* HTC_CSP_END */
 	return platform_driver_register(&msmsdcc_driver);
 }
 

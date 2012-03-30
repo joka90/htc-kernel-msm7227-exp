@@ -182,7 +182,7 @@ static struct microp_led_config led_config[] = {
 		.name = "button-backlight",
 		.type = LED_PWM,
 		.led_pin = 1 << 1,
-		.init_value = 0x64,
+		.init_value = 0x82,
 		.fade_time = 5,
 	},
 	{
@@ -193,6 +193,8 @@ static struct microp_led_config led_config[] = {
 	{
 		.name = "sharekey",
 		.type = LED_SKEY,
+		.led_pin = 1 << 2,
+		.fade_time = 5,
 	},
 };
 
@@ -1275,7 +1277,7 @@ static void __init chacha_init(void)
 
 	chacha_wifi_init();
 
-	msm_init_pmic_vibrator(3000);
+	msm_init_pmic_vibrator(3100);
 }
 
 static void __init chacha_fixup(struct machine_desc *desc, struct tag *tags,

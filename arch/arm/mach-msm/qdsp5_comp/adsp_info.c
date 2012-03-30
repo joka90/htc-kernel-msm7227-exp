@@ -37,6 +37,7 @@ static struct adsp_module_info module_info[] = {
 		adsp_jpeg_verify_cmd, adsp_jpeg_patch_event),
 	QDSP_MODULE(VIDEOTASK, "vdc_clk",
 		96000000, adsp_video_verify_cmd, NULL),
+	QDSP_MODULE(VIDEO_AAC_VOC_TURBO, NULL, 0, NULL, NULL),
 	QDSP_MODULE(VDEC_LP_MODE, NULL, 0, NULL, NULL),
 	QDSP_MODULE(VIDEOENCTASK, "vdc_clk", 96000000,
 		adsp_videoenc_verify_cmd, NULL),

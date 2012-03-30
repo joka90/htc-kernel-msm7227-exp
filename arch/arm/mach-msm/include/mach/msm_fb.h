@@ -369,7 +369,8 @@ extern int msmfb_get_fb_area(void);
 #if defined (CONFIG_FB_MSM_MDP_ABL)
 extern struct mdp_histogram mdp_hist;
 extern struct completion mdp_hist_comp;
-#endif
-#endif
 
+#endif
+#endif
+extern int check_psensor;
 #endif

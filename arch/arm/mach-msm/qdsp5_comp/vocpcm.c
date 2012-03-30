@@ -532,6 +532,7 @@ static int vocpcm_open(struct inode *inode, struct file *file)
 			rc = PTR_ERR(voc_rpc->ept);
 			voc_rpc->ept = NULL;
 			MM_AUD_ERR("vocpcm: failed to connect snd svc\n");
+			mutex_unlock(&voc_rpc->lock);
 			return rc;
 		}
 
@@ -541,6 +542,7 @@ static int vocpcm_open(struct inode *inode, struct file *file)
 			voc_rpc->task = NULL;
 			msm_rpc_close(voc_rpc->ept);
 			voc_rpc->ept = NULL;
+			mutex_unlock(&voc_rpc->lock);
 			return rc;
 		}
 		voc_rpc->inited = 1;

@@ -33,7 +33,7 @@ struct timekeeper {
 	/* Number of clock shifted nano seconds in one NTP interval. */
 	u64	xtime_interval;
 	/* shifted nano seconds left over when rounding cycle_interval */
-	s64	xtime_remainder;
+	s64     xtime_remainder;
 	/* Raw nano seconds accumulated per NTP interval. */
 	u32	raw_interval;
 
@@ -770,7 +770,7 @@ static cycle_t logarithmic_accumulation(cycle_t offset, int shift)
 	/* Accumulate error between NTP and clock interval */
 	timekeeper.ntp_error += tick_length << shift;
 	timekeeper.ntp_error -=
-	    (timekeeper.xtime_interval + timekeeper.xtime_remainder) <<
+		(timekeeper.xtime_interval + timekeeper.xtime_remainder) <<
 				(timekeeper.ntp_error_shift + shift);
 
 	return offset;

@@ -20,7 +20,7 @@ config ARM
 	select HAVE_FUNCTION_TRACER if (!XIP_KERNEL)
 	select HAVE_GENERIC_DMA_COHERENT
 	select HAVE_KERNEL_GZIP
-	select HAVE_KERNEL_BZIP2
+	select HAVE_KERNEL_LZO
 	select HAVE_KERNEL_LZMA
 	select HAVE_PERF_EVENTS
 	select PERF_USE_VMALLOC
@@ -590,7 +590,7 @@ config ARCH_MSM
 	select GENERIC_TIME
 	select GENERIC_CLOCKEVENTS
 	select ARCH_WANT_OPTIONAL_GPIOLIB
-	select ARCH_HAS_BARRIERS if !ARCH_MSM7227
+	select ARCH_HAS_BARRIERS
 	help
 	  Support for Qualcomm MSM/QSD based systems.  This runs on the
 	  ARM11/Scorpion apps processor of the MSM/QSD and depends on a

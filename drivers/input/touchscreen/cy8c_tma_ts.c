@@ -540,6 +540,7 @@ static void cy8c_ts_work_func(struct work_struct *work)
 			if (ts->orient & 0x04)
 				swap(x, y);
 			z = buf[base + 4];
+			input_report_abs(ts->input_dev, ABS_MT_TRACKING_ID, loop_i % 2 == 1 ? (buf[base - 1]&0x0F) - 1: (buf[base + 5] >> 4) - 1);
 #ifdef CONFIG_TOUCHSCREEN_COMPATIBLE_REPORT
 			input_report_abs(ts->input_dev, ABS_MT_TOUCH_MAJOR, z);
 			input_report_abs(ts->input_dev, ABS_MT_WIDTH_MAJOR, z);
@@ -562,8 +563,8 @@ static void cy8c_ts_work_func(struct work_struct *work)
 			}
 
 			if (ts->debug_log_level & 0x2)
-				printk(KERN_INFO "Finger %d=> X:%d, Y:%d w:%d, z:%d\n",
-					loop_i + 1, x, y, z, z);
+				printk(KERN_INFO "Finger %d=> X:%d, Y:%d w:%d, z:%d, id:%d\n",
+					loop_i + 1, x, y, z, z, loop_i % 2 == 1 ? (buf[base - 1]&0x0F) - 1 : (buf[base + 5] >> 4) - 1);
 			if (loop_i % 2 == 1)
 				base += 7;
 			else
@@ -730,6 +731,8 @@ static int cy8c_ts_probe(struct i2c_client *client,
 		pdata->abs_pressure_min, pdata->abs_pressure_max, 0, 0);
 	input_set_abs_params(ts->input_dev, ABS_MT_WIDTH_MAJOR,
 		pdata->abs_width_min, pdata->abs_width_max, 0, 0);
+	input_set_abs_params(ts->input_dev, ABS_MT_TRACKING_ID,
+		0, 0, 0, 0);
 
 #ifndef CONFIG_TOUCHSCREEN_COMPATIBLE_REPORT
 	input_set_abs_params(ts->input_dev, ABS_MT_AMPLITUDE,

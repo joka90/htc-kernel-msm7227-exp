@@ -50,12 +50,11 @@ obj-$(CONFIG_ATH_COMMON)	+= ath/
 obj-$(CONFIG_MAC80211_HWSIM)	+= mac80211_hwsim.o
 
 obj-$(CONFIG_WL12XX)	+= wl12xx/
-obj-$(CONFIG_WL12XX_PLATFORM_DATA)	+= wl12xx/wl12xx_platform_data.o
 
 obj-$(CONFIG_IWM)	+= iwmc3200wifi/
 
-ifeq ($(CONFIG_BCM4329_PURE_ANDROID),y)
-  obj-$(CONFIG_BCM4329)	+= bcm4329/
-else
-  obj-$(CONFIG_BCM4329)	+= bcm4329_204/
-endif
+obj-$(CONFIG_BCM4329)	+= bcm4329_204/
+
+obj-$(CONFIG_BCM4329_CES)	+= bcm4329_CES/
+
+obj-$(CONFIG_BCM4329_248)   += bcm4329_248/

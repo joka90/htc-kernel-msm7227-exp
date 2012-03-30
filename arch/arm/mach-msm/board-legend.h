@@ -55,8 +55,7 @@
 #define LEGEND_GPIO_UART3_RX            (86)
 #define LEGEND_GPIO_UART3_TX            (87)
 #define LEGEND_GPIO_PS_HOLD             (25)
-#define LEGEND_WIFI_IRQ_GPIO	        (29) /*can be found in wifi_off_gpio_table[], in board-legend-mmc.c */
-#define LEGEND_GPIO_UP_RESET_N          (76) 
+#define LEGEND_GPIO_UP_RESET_N          (76)
 #define LEGEND_GPIO_CAP_LED_EN          (121)
 #define LEGEND_GPIO_USBPHY_3V3_EN       (109)
 #define LEGEND_GPIO_FUNC_LED_EN         (0)
